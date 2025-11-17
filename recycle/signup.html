@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoomBook - Sign Up</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ff7a3d 0%, #e66a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .signup-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .signup-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .signup-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-large {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .logo-large .logo-icon {
+            width: 56px;
+            height: 56px;
+            background-color: #ff7a3d;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo-large h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .logo-large p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .signup-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .signup-header p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .signup-form {
+            margin-bottom: 24px;
+        }
+
+        .signup-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .signup-form label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .signup-form input[type="text"],
+        .signup-form input[type="email"],
+        .signup-form input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .signup-form input:focus {
+            border-color: #ff7a3d;
+        }
+
+        .password-strength {
+            margin-top: 8px;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+            background-color: #d32f2f;
+        }
+
+        .password-requirements {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .requirement {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .requirement:last-child {
+            margin-bottom: 0;
+        }
+
+        .requirement-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-right: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .requirement.met .requirement-icon {
+            background: #4caf50;
+        }
+
+        .requirement.met {
+            color: #4caf50;
+        }
+
+        .password-mismatch {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .signup-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #ff7a3d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .signup-btn:hover:not(:disabled) {
+            background-color: #e66a2e;
+        }
+
+        .signup-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .signup-footer {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .signup-footer p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .signup-footer a {
+            color: #ff7a3d;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .signup-card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-card">
+            <div class="signup-header">
+                <div class="logo-large">
+                    <div class="logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 4h3a2 2 0 0 1 2 2v14"/>
+                            <path d="M2 20h3"/>
+                            <path d="M13 20h9"/>
+                            <path d="M10 12v.01"/>
+                            <path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1>FaCET-RMS</h1>
+                        <p>Booking System</p>
+                    </div>
+                </div>
+                <h2>Create Account</h2>
+                <p>Sign up to start booking rooms</p>
+            </div>
+
+            <form id="signupForm" class="signup-form">
+                <div class="form-group">
+                    <label for="fullname">Full Name</label>
+                    <input type="text" id="fullname" placeholder="John Doe" required>
+                    <div class="error-message" id="nameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <div class="password-strength">
+                        <div class="password-strength-bar"></div>
+                    </div>
+                    <div class="password-requirements">
+                        <div class="requirement" data-requirement="uppercase">
+                            <span class="requirement-icon">✓</span>
+                            <span>Must include uppercase and lowercase letters</span>
+                        </div>
+                        <div class="requirement" data-requirement="number">
+                            <span class="requirement-icon">✓</span>
+                            <span>Must contain at least one number</span>
+                        </div>
+                        <div class="requirement" data-requirement="special">
+                            <span class="requirement-icon">✓</span>
+                            <span>Must include a special character (!@#$%^&*)</span>
+                        </div>
+                        <div class="requirement" data-requirement="length">
+                            <span class="requirement-icon">✓</span>
+                            <span>Must be at least 8 characters long</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="retypePassword">Retype Password</label>
+                    <input type="password" id="retypePassword" placeholder="••••••••" required>
+                    <div class="password-mismatch">Passwords do not match</div>
+                </div>
+
+                <button type="submit" class="signup-btn">Create Account</button>
+            </form>
+
+            <div class="signup-footer">
+                <p>Already have an account? <a href="signin.html">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('signupForm');
+        const passwordInput = document.getElementById('password');
+        const retypePasswordInput = document.getElementById('retypePassword');
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const submitBtn = document.querySelector('.signup-btn');
+
+        const passwordRequirements = {
+            uppercase: /[a-z].*[A-Z]|[A-Z].*[a-z]/,
+            number: /\d/,
+            special: /[!@#$%^&*]/,
+            length: /.{8,}/
+        };
+
+        function validatePasswordRequirements() {
+            const password = passwordInput.value;
+            let allMet = true;
+
+            Object.keys(passwordRequirements).forEach(requirement => {
+                const element = document.querySelector(`[data-requirement="${requirement}"]`);
+                const isMet = passwordRequirements[requirement].test(password);
+
+                if (isMet) {
+                    element.classList.add('met');
+                } else {
+                    element.classList.remove('met');
+                    allMet = false;
+                }
+            });
+
+            return allMet;
+        }
+
+        function updatePasswordStrength() {
+            const password = passwordInput.value;
+            const strengthBar = document.querySelector('.password-strength-bar');
+            const strengthContainer = document.querySelector('.password-strength');
+            const requirementsContainer = document.querySelector('.password-requirements');
+
+            if (password.length === 0) {
+                strengthContainer.style.display = 'none';
+                requirementsContainer.style.display = 'none';
+                return;
+            }
+
+            strengthContainer.style.display = 'block';
+            requirementsContainer.style.display = 'block';
+
+            let strength = 0;
+            if (password.length >= 8) strength += 25;
+            if (passwordRequirements.uppercase.test(password)) strength += 25;
+            if (passwordRequirements.number.test(password)) strength += 25;
+            if (passwordRequirements.special.test(password)) strength += 25;
+
+            strengthBar.style.width = strength + '%';
+
+            if (strength <= 25) {
+                strengthBar.style.backgroundColor = '#d32f2f';
+            } else if (strength <= 50) {
+                strengthBar.style.backgroundColor = '#ff9800';
+            } else if (strength <= 75) {
+                strengthBar.style.backgroundColor = '#ffc107';
+            } else {
+                strengthBar.style.backgroundColor = '#4caf50';
+            }
+
+            validatePasswordRequirements();
+        }
+
+        function checkPasswordMatch() {
+            const mismatchMessage = document.querySelector('.password-mismatch');
+            if (retypePasswordInput.value && passwordInput.value !== retypePasswordInput.value) {
+                mismatchMessage.style.display = 'block';
+            } else {
+                mismatchMessage.style.display = 'none';
+            }
+        }
+
+        function updateSubmitButton() {
+            const passwordValid = validatePasswordRequirements();
+            const passwordsMatch = passwordInput.value === retypePasswordInput.value && passwordInput.value.length > 0;
+            const fullnameValid = fullnameInput.value.trim().length > 0;
+            const emailValid = emailInput.value.includes('@');
+
+            submitBtn.disabled = !(passwordValid && passwordsMatch && fullnameValid && emailValid);
+        }
+
+        passwordInput.addEventListener('input', function() {
+            updatePasswordStrength();
+            checkPasswordMatch();
+            updateSubmitButton();
+        });
+
+        retypePasswordInput.addEventListener('input', function() {
+            checkPasswordMatch();
+            updateSubmitButton();
+        });
+
+        fullnameInput.addEventListener('input', updateSubmitButton);
+        emailInput.addEventListener('input', updateSubmitButton);
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            let isValid = true;
+            const nameError = document.getElementById('nameError');
+            const emailError = document.getElementById('emailError');
+
+            nameError.classList.remove('show');
+            emailError.classList.remove('show');
+
+            if (!fullnameInput.value.trim()) {
+                nameError.textContent = 'Full name is required';
+                nameError.classList.add('show');
+                isValid = false;
+            }
+
+            if (!emailInput.value.includes('@')) {
+                emailError.textContent = 'Please enter a valid email';
+                emailError.classList.add('show');
+                isValid = false;
+            }
+
+            if (!validatePasswordRequirements()) {
+                isValid = false;
+            }
+
+            if (passwordInput.value !== retypePasswordInput.value) {
+                isValid = false;
+            }
+
+            if (isValid) {
+                console.log("[v0] Account creation:", { name: fullnameInput.value, email: emailInput.value });
+                localStorage.setItem("userSession", JSON.stringify({ email: emailInput.value, loggedIn: true }));
+                alert('Account created successfully!');
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>

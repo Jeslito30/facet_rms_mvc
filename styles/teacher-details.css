@@ -1,0 +1,167 @@
+/* Teacher Details Page */
+.details-container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.details-form-panel {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  width: 40px;
+  height: 40px;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+  background-color: #e5e5e5;
+}
+
+.form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-top: 48px;
+}
+
+.form-section-header svg {
+  color: #1a1a1a;
+}
+
+.form-section-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.details-form .form-group input {
+  background-color: #f5f5f5;
+  border: 1px solid #e5e5e5;
+}
+
+.file-upload-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  border: 2px dashed #e5e5e5;
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f5f5f5;
+}
+
+.file-upload-display svg {
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.file-upload-display p {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.details-preview-panel {
+  position: sticky;
+  top: 32px;
+  height: fit-content;
+}
+
+.preview-card {
+  background-color: #1a1a1a;
+  border-radius: 12px;
+  padding: 24px;
+  color: white;
+}
+
+.preview-image {
+  width: 100%;
+  height: 200px;
+  background-color: white;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.preview-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-info {
+  margin-bottom: 24px;
+}
+
+.preview-info h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.preview-detail {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.preview-detail svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.preview-department {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  text-align: center;
+}
+
+.btn-edit-large {
+  width: 100%;
+  padding: 14px;
+  background-color: #ff7a3d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-edit-large:hover {
+  background-color: #e66a2e;
+}
+
+@media (max-width: 1024px) {
+  .details-container {
+    grid-template-columns: 1fr;
+  }
+
+  .details-preview-panel {
+    position: static;
+  }
+}
