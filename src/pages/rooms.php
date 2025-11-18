@@ -188,7 +188,7 @@
             </svg>
           </button>
         </div>
-        <form id="roomForm">
+        <form id="roomForm" class="modal-form">
           <div class="form-group">
             <label for="roomName">Room Name *</label>
             <input
@@ -347,6 +347,90 @@
             Delete Room
           </button>
         </div>
+      </div>
+    </div>
+<div id="bookRoomModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="bookModalTitle">Book Room: <span id="roomNameToBook"></span></h2>
+          <button id="closeBookModal" class="close-btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M18 6 6 18" />
+              <path d="m6 6 12 12" />
+            </svg>
+          </button>
+        </div>
+        <form id="bookRoomForm" class="modal-form">
+          <input type="hidden" id="bookRoomId" name="roomId" required>
+          <div class="form-group">
+            <label for="bookingTitle">Meeting Title *</label>
+            <input
+              type="text"
+              id="bookingTitle"
+              required
+              placeholder="e.g., ITMSD Laboratory Session"
+            />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bookingDate">Date *</label>
+              <input type="date" id="bookingDate" required />
+            </div>
+            <div class="form-group">
+              <label for="bookingAttendees">Attendees * (Max: <span id="maxCapacity"></span>)</label>
+              <input
+                type="number"
+                id="bookingAttendees"
+                required
+                placeholder="20"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="bookingStartTime">Start Time *</label>
+              <input type="time" id="bookingStartTime" required />
+            </div>
+
+            <div class="form-group">
+              <label for="bookingEndTime">End Time *</label>
+              <input type="time" id="bookingEndTime" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="bookingRecurring">Recurring (e.g., MWF, TTh, None)</label>
+            <input type="text" id="bookingRecurring" value="None" />
+          </div>
+
+          <div class="form-group">
+            <label for="bookingDescription">Description (Optional)</label>
+            <textarea
+              id="bookingDescription"
+              placeholder="Detailed purpose of the meeting or event"
+            ></textarea>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" id="cancelBookBtn" class="btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Submit Request</button>
+          </div>
+        </form>
       </div>
     </div>
 

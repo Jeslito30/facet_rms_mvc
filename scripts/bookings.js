@@ -1,64 +1,43 @@
-// Sample booking data
-const sampleBookings = [
-  {
-    id: 1,
-    meetingTitle: "FaCET Miting de Avance",
-    room: "ComLab 1",
-    building: "FaCET Extension Building",
-    floor: "1st Floor",
-    date: "2025-09-15",
-    requestDate: "2025-08-27",
-    startTime: "09:00",
-    endTime: "12:00",
-    attendees: 38,
-    recurring: "MWF",
-    description: "No additional details of the booking...",
-    requestor: "Geverola, Jeslito Galagar",
-    status: "Pending",
-    imageUrl: "../../assets/images/computer-laboratory-room-with-orange-theme.jpg",
-  },
-  {
-    id: 2,
-    meetingTitle: "ITMSD 1 Laboratory",
-    room: "ComLab 2",
-    building: "FaCET Extension Building",
-    floor: "1st Floor",
-    date: "2025-09-15",
-    requestDate: "2025-08-18",
-    startTime: "09:00",
-    endTime: "12:00",
-    attendees: 40,
-    recurring: "TTh",
-    description: "Laboratory session for ITMSD 1",
-    requestor: "Smith, John",
-    status: "Approved",
-    imageUrl: "../../assets/images/modern-computer-lab.jpg",
-  },
-  {
-    id: 3,
-    meetingTitle: "ITP 132 Laboratory",
-    room: "ComLab 3",
-    building: "FaCET Extension Building",
-    floor: "1st Floor",
-    date: "2025-09-15",
-    requestDate: "2025-08-18",
-    startTime: "09:00",
-    endTime: "12:00",
-    attendees: 35,
-    recurring: "MWF",
-    description: "Programming laboratory session",
-    requestor: "Doe, Jane",
-    status: "Approved",
-    imageUrl: "../../assets/images/programming-lab-with-computers.jpg",
-  },
-]
+const API_ENDPOINT = "../../database/bookings_api.php"; // ADDED
+let bookings = []; // ADDED
 
-// Initialize bookings from localStorage or use sample data
-const bookings = JSON.parse(localStorage.getItem("bookings")) || sampleBookings
-
-// Save bookings to localStorage
-function saveBookings() {
-  localStorage.setItem("bookings", JSON.stringify(bookings))
+// New function to load bookings from the API
+async function loadBookings() { // MODIFIED
+  try {
+    const response = await fetch(`${API_ENDPOINT}?action=list`);
+    const result = await response.json();
+    
+    if (result.success) {
+      // Map API response fields to the structure expected by the rendering functions
+      bookings = result.data.map(b => ({
+        id: b.id,
+        meetingTitle: b.meeting_title,
+        room: b.room_name,
+        building: b.building,
+        floor: b.floor,
+        date: b.booking_date, 
+        requestDate: b.request_date.split(' ')[0], 
+        startTime: b.start_time,
+        endTime: b.end_time,
+        attendees: b.attendees,
+        recurring: b.recurring,
+        description: b.description,
+        requestor: b.requestor_name,
+        status: b.status,
+        imageUrl: b.image_url || `../../assets/images/computer-laboratory-laboratory-room-with-orange-theme.jpg`,
+      }));
+      
+      updateStatusCounts();
+      renderRecentBookings();
+      renderBookingHistory();
+    } else {
+      console.error("Error loading bookings:", result.message);
+      // Fallback display
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    // Fallback display
+  }
 }
 
 // Format date
@@ -108,7 +87,7 @@ function renderRecentBookings() {
 
   const recent = pendingBookings[0]
   recentContainer.innerHTML = `
-    <div class="recent-booking-card" onclick="viewBookingDetails(${recent.id})">
+    <div class="recent-booking-card">
       <div class="recent-booking-info">
         <div class="recent-booking-title">${recent.meetingTitle}</div>
         <div class="recent-booking-details">
@@ -137,12 +116,16 @@ function renderRecentBookings() {
           </div>
         </div>
       </div>
-      <button class="view-details-btn">
-        <span>View Details</span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="m9 18 6-6-6-6"/>
-        </svg>
-      </button>
+      <div class="recent-booking-actions">
+        <button class="btn-approve" onclick="approveBooking(${recent.id})">Approve</button>
+        <button class="btn-reject" onclick="rejectBooking(${recent.id})">Reject</button>
+        <button class="view-details-btn" onclick="viewBookingDetails(${recent.id})">
+    <span>View Details</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
     </div>
   `
 }
@@ -200,6 +183,10 @@ function renderBookingHistory() {
           </div>
           <div class="booking-history-actions">
             <span class="booking-history-status ${booking.status.toLowerCase()}">${booking.status}</span>
+            ${booking.status === 'Pending' ? `
+              <button class="btn-approve" onclick="approveBooking(${booking.id})">Approve</button>
+              <button class="btn-reject" onclick="rejectBooking(${booking.id})">Reject</button>
+            ` : ''}
             <button class="view-details-btn-small" onclick="event.stopPropagation(); viewBookingDetails(${booking.id})">
               <span>View Details</span>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -217,20 +204,74 @@ function renderBookingHistory() {
 
 // View booking details
 function viewBookingDetails(bookingId) {
-  console.log("Setting currentBookingId to:", bookingId)
-  localStorage.setItem("currentBookingId", bookingId)
-  console.log("Current bookings in localStorage:", localStorage.getItem("bookings"))
-  window.location.href = "booking-details.php"
+  window.location.href = "booking-details.php?id=" + bookingId; // Use URL parameter
 }
 
 // Global function for onclick
 window.viewBookingDetails = viewBookingDetails
 
+// --- API Action Functions ---
+async function updateBookingStatus(bookingId, action) {
+  try {
+    const response = await fetch(`${API_ENDPOINT}?action=${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: bookingId })
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      showNotification(`Booking ${action}ed successfully!`, 'success');
+      loadBookings(); // Reload bookings to update UI
+    } else {
+      showNotification(`Error ${action}ing booking: ${result.message}`, 'error');
+    }
+  } catch (error) {
+    console.error(`Error ${action}ing booking:`, error);
+    showNotification(`Failed to ${action} booking. Please check server connection.`, 'error');
+  }
+}
+
+function approveBooking(bookingId) {
+  updateBookingStatus(bookingId, 'approve');
+}
+
+function rejectBooking(bookingId) {
+  updateBookingStatus(bookingId, 'reject');
+}
+
+// --- Helper for Notifications ---
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10000;
+    animation: slideIn 0.3s ease;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Global functions for onclick
+window.viewBookingDetails = viewBookingDetails;
+window.approveBooking = approveBooking; // Make global for onclick
+window.rejectBooking = rejectBooking;   // Make global for onclick
+
 // Initialize page
 if (document.getElementById("recentBookingsContainer")) {
-  // Save bookings to localStorage to ensure they're available
-  saveBookings()
-  updateStatusCounts()
-  renderRecentBookings()
-  renderBookingHistory()
+  loadBookings(); // Call the new async loader
 }

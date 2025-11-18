@@ -1,6 +1,125 @@
 // rooms.js - FULLY MODIFIED TO USE ASYNCHRONOUS FETCH API FOR DATABASE OPERATIONS
 
 // The global rooms array will now be populated by the database on load
+const BOOKINGS_API_ENDPOINT = '/facet-rms/database/bookings_api.php';
+
+// Booking Modal DOM Elements
+const bookRoomModal = document.getElementById("bookRoomModal");
+const closeBookModal = document.getElementById("closeBookModal");
+const cancelBookBtn = document.getElementById("cancelBookBtn");
+const bookRoomForm = document.getElementById("bookRoomForm");
+const roomNameToBook = document.getElementById("roomNameToBook");
+const maxCapacity = document.getElementById("maxCapacity");
+
+/**
+ * Open modal for booking a room and pre-populate fields.
+ * This is called by the "Book Now" button's onclick attribute.
+ */
+window.bookRoom = (roomId) => {
+  const room = rooms.find(r => r.id == roomId);
+  if (room) {
+    document.getElementById("bookRoomId").value = room.id;
+    roomNameToBook.textContent = room.name;
+    maxCapacity.textContent = room.capacity;
+    document.getElementById("bookingAttendees").max = room.capacity;
+    
+    // Set today's date as default
+    document.getElementById("bookingDate").value = new Date().toISOString().split('T')[0];
+
+    // Automatically set the room's configured start and end times and make them readonly
+    const bookingStartTimeInput = document.getElementById("bookingStartTime");
+    const bookingEndTimeInput = document.getElementById("bookingEndTime");
+
+    bookingStartTimeInput.value = room.startTime || room.start_time || "";
+    bookingEndTimeInput.value = room.endTime || room.end_time || "";
+
+    bookingStartTimeInput.setAttribute('readonly', true);
+    bookingEndTimeInput.setAttribute('readonly', true);
+
+    bookRoomModal.classList.add('active');
+  }
+}
+
+/**
+ * Close the booking modal and reset the form
+ */
+function closeBookModalFunc() {
+  bookRoomModal.classList.remove('active');
+  bookRoomForm.reset();
+  
+  // Remove readonly attribute when closing the modal
+  document.getElementById("bookingStartTime").removeAttribute('readonly');
+  document.getElementById("bookingEndTime").removeAttribute('readonly');
+}
+
+// Event Listeners for booking modal
+if (closeBookModal) {
+  closeBookModal.addEventListener("click", closeBookModalFunc);
+}
+if (cancelBookBtn) {
+  cancelBookBtn.addEventListener("click", closeBookModalFunc);
+}
+
+/**
+ * Handle the booking form submission
+ */
+if (bookRoomForm) {
+  bookRoomForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = bookRoomForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    const roomId = document.getElementById("bookRoomId").value;
+    const attendees = document.getElementById("bookingAttendees").value;
+    
+    // Capacity validation
+    const room = rooms.find(r => r.id == roomId);
+    if (room && Number(attendees) > Number(room.capacity)) {
+        showNotification(`Attendees (${attendees}) exceeds room capacity (${room.capacity}).`, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+        return;
+    }
+    
+    const bookingData = {
+        roomId: Number(roomId),
+        meetingTitle: document.getElementById("bookingTitle").value,
+        date: document.getElementById("bookingDate").value,
+        startTime: document.getElementById("bookingStartTime").value,
+        endTime: document.getElementById("bookingEndTime").value,
+        attendees: Number(attendees),
+        recurring: document.getElementById("bookingRecurring").value,
+        description: document.getElementById("bookingDescription").value,
+    };
+    
+    try {
+        // Call API to create a new booking request with status 'Pending'
+        const response = await fetch(`${BOOKINGS_API_ENDPOINT}?action=create`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Booking request submitted! Status: Pending.', 'success');
+            closeBookModalFunc();
+        } else {
+            showNotification('Error submitting request: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Booking Submission Error:', error);
+        showNotification('Failed to submit booking request. Please check server connection.', 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+    }
+  });
+}
+
 let rooms = []
 
 // --- API Interaction Functions (REPLACING localStorage) ---
@@ -19,7 +138,12 @@ async function loadRoomsFromDB() {
             'Accept': 'application/json',
         }
     });
-
+    const bookRoomModal = document.getElementById("bookRoomModal"); // ADDED
+const closeBookModal = document.getElementById("closeBookModal"); // ADDED
+const cancelBookBtn = document.getElementById("cancelBookBtn"); // ADDED
+const bookRoomForm = document.getElementById("bookRoomForm"); // ADDED
+const roomNameToBook = document.getElementById("roomNameToBook"); // ADDED
+const maxCapacity = document.getElementById("maxCapacity"); // ADDED
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -300,6 +424,9 @@ function openModal(isEdit = false, roomId = null) {
   editingRoomId = roomId
   modalTitle.textContent = isEdit ? 'Edit Room' : 'Create New Room'
   
+  document.getElementById('roomStartTime').removeAttribute('readonly');
+  document.getElementById('roomEndTime').removeAttribute('readonly');
+  
   if (isEdit && roomId) {
     const room = rooms.find(r => r.id == roomId)
     if (room) {
@@ -500,6 +627,14 @@ window.deleteRoom = (roomId) => {
   }
 }
 
+
+// Attach listeners for the new modal (in the Event Listeners section)
+if (closeBookModal) {
+  closeBookModal.addEventListener("click", closeBookModalFunc);
+}
+if (cancelBookBtn) {
+  cancelBookBtn.addEventListener("click", closeBookModalFunc);
+}
 
 // --- Initialization ---
 

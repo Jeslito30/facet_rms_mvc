@@ -241,10 +241,11 @@
   color: white;
 }
 
-.booking-history-actions {
+.recent-booking-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .view-details-btn-small {
