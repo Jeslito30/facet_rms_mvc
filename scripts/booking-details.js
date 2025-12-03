@@ -1,7 +1,6 @@
-// Variables will be set when DOM loads
-let currentBookingId
-let bookings
-let currentBooking
+const API_ENDPOINT = "../../database/bookings_api.php"; // ADDED
+
+let currentBooking = null; // ADDED
 
 // Format date
 function formatDate(dateString) {
@@ -21,125 +20,154 @@ function formatTime(time) {
 
 // Account dropdown is handled by script.js
 
-// Populate booking details when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    console.log("Booking details script loaded successfully!")
-    
-    // Get current booking ID from localStorage
-    currentBookingId = Number.parseInt(localStorage.getItem("currentBookingId"))
-    
-    // Get bookings from localStorage
-    bookings = JSON.parse(localStorage.getItem("bookings")) || []
-    
-    // Find current booking
-    currentBooking = bookings.find((b) => b.id === currentBookingId)
-    
-    console.log("Current Booking ID:", currentBookingId)
-    console.log("Bookings:", bookings)
-    console.log("Current Booking:", currentBooking)
-    
-    if (currentBooking) {
-      // Left panel - form inputs
-      const buildingInput = document.getElementById("buildingInput")
-      const roomInput = document.getElementById("roomInput")
-      const dateInput = document.getElementById("dateInput")
-      const meetingTitleInput = document.getElementById("meetingTitleInput")
-      const startTimeInput = document.getElementById("startTimeInput")
-      const endTimeInput = document.getElementById("endTimeInput")
-      const attendeesInput = document.getElementById("attendeesInput")
-      const recurringInput = document.getElementById("recurringInput")
-      const descriptionInput = document.getElementById("descriptionInput")
-
-      if (buildingInput) buildingInput.value = `${currentBooking.building}, ${currentBooking.floor}`
-      if (roomInput) roomInput.value = currentBooking.room
-      if (dateInput) dateInput.value = formatDate(currentBooking.date)
-      if (meetingTitleInput) meetingTitleInput.value = currentBooking.meetingTitle
-      if (startTimeInput) startTimeInput.value = formatTime(currentBooking.startTime)
-      if (endTimeInput) endTimeInput.value = formatTime(currentBooking.endTime)
-      if (attendeesInput) attendeesInput.value = `${currentBooking.attendees} people`
-      if (recurringInput) recurringInput.value = currentBooking.recurring
-      if (descriptionInput) descriptionInput.value = currentBooking.description
-
-      // Right panel - room details
-      const roomImage = document.getElementById("roomImage")
-      const roomName = document.getElementById("roomName")
-      const roomLocation = document.getElementById("roomLocation")
-      const roomMeetingTitle = document.getElementById("roomMeetingTitle")
-      const roomDate = document.getElementById("roomDate")
-      const roomTime = document.getElementById("roomTime")
-      const roomAttendees = document.getElementById("roomAttendees")
-      const roomRequestor = document.getElementById("roomRequestor")
-
-      if (roomImage) {
-        roomImage.src = currentBooking.imageUrl
-        roomImage.alt = currentBooking.room
-      }
-      if (roomName) roomName.textContent = currentBooking.room
-      if (roomLocation) roomLocation.textContent = `${currentBooking.building}, ${currentBooking.floor}`
-      if (roomMeetingTitle) roomMeetingTitle.textContent = currentBooking.meetingTitle
-      if (roomDate) roomDate.textContent = formatDate(currentBooking.date)
-      if (roomTime) roomTime.textContent = `${currentBooking.recurring} ${formatTime(currentBooking.startTime)} - ${formatTime(currentBooking.endTime)}`
-      if (roomAttendees) roomAttendees.textContent = `${currentBooking.attendees} people`
-      if (roomRequestor) roomRequestor.textContent = currentBooking.requestor
-      
-      console.log("Booking details populated successfully!")
-    } else {
-      console.log("No booking found, redirecting back...")
-      // Redirect back if no booking found
-      window.location.href = "bookings.php"
-    }
-  } catch (error) {
-    console.error("Error in booking details script:", error)
-  }
-})
-
 // Go back to bookings page
 function goBack() {
   window.location.href = "bookings.php"
 }
-
-// Approve booking
-function approveBooking() {
-  // Get fresh data from localStorage
-  const currentId = Number.parseInt(localStorage.getItem("currentBookingId"))
-  const currentBookings = JSON.parse(localStorage.getItem("bookings")) || []
-  const currentBookingData = currentBookings.find((b) => b.id === currentId)
+async function loadBookingDetails() { // MODIFIED
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookingId = urlParams.get('id');
   
-  if (currentBookingData) {
-    const index = currentBookings.findIndex((b) => b.id === currentId)
-    if (index !== -1) {
-      currentBookings[index].status = "Approved"
-      localStorage.setItem("bookings", JSON.stringify(currentBookings))
-      alert("Booking approved successfully!")
-      window.location.href = "bookings.php"
+  if (!bookingId) {
+    alert('No booking ID provided. Redirecting.');
+    window.location.href = "bookings.php";
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_ENDPOINT}?action=get&id=${bookingId}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      currentBooking = result.data;
+      populateBookingDetails(currentBooking);
+    } else {
+      alert('Error loading booking: ' + result.message);
+      window.location.href = "bookings.php";
     }
-  } else {
-    alert("Booking not found!")
+  } catch (error) {
+    console.error('Error fetching booking details:', error);
+    alert('Failed to load booking details.');
+    window.location.href = "bookings.php";
   }
 }
 
-// Reject booking
-function rejectBooking() {
-  // Get fresh data from localStorage
-  const currentId = Number.parseInt(localStorage.getItem("currentBookingId"))
-  const currentBookings = JSON.parse(localStorage.getItem("bookings")) || []
-  const currentBookingData = currentBookings.find((b) => b.id === currentId)
-  
-  if (currentBookingData) {
-    const index = currentBookings.findIndex((b) => b.id === currentId)
-    if (index !== -1) {
-      currentBookings[index].status = "Rejected"
-      localStorage.setItem("bookings", JSON.stringify(currentBookings))
-      alert("Booking rejected.")
-      window.location.href = "bookings.php"
+// Renamed/modified original populate function to match API data structure
+function populateBookingDetails(booking) {
+    const room = booking.room_name;
+    const building = booking.building;
+    const floor = booking.floor;
+    const date = booking.booking_date;
+    const startTime = booking.start_time;
+    const endTime = booking.end_time;
+    const meetingTitle = booking.meeting_title;
+    const attendees = booking.attendees;
+    const recurring = booking.recurring;
+    const description = booking.description;
+    const requestor = booking.requestor_name;
+    const imageUrl = booking.image_url || "../../assets/images/computer-laboratory-laboratory-room-with-orange-theme.jpg"; // Use default placeholder
+
+    // Left panel - form inputs
+    const buildingInput = document.getElementById("buildingInput");
+    const roomInput = document.getElementById("roomInput");
+    const dateInput = document.getElementById("dateInput");
+    const meetingTitleInput = document.getElementById("meetingTitleInput");
+    const startTimeInput = document.getElementById("startTimeInput");
+    const endTimeInput = document.getElementById("endTimeInput");
+    const attendeesInput = document.getElementById("attendeesInput");
+    const recurringInput = document.getElementById("recurringInput");
+    const descriptionInput = document.getElementById("descriptionInput");
+
+    if (buildingInput) buildingInput.value = `${building}, ${floor}`;
+    if (roomInput) roomInput.value = room;
+    if (dateInput) dateInput.value = formatDate(date);
+    if (meetingTitleInput) meetingTitleInput.value = meetingTitle;
+    if (startTimeInput) startTimeInput.value = formatTime(startTime);
+    if (endTimeInput) endTimeInput.value = formatTime(endTime);
+    if (attendeesInput) attendeesInput.value = `${attendees} people`;
+    if (recurringInput) recurringInput.value = recurring;
+    if (descriptionInput) descriptionInput.value = description;
+
+    // Right panel - room details
+    const roomImage = document.getElementById("roomImage");
+    const roomName = document.getElementById("roomName");
+    const roomLocation = document.getElementById("roomLocation");
+    const roomMeetingTitle = document.getElementById("roomMeetingTitle");
+    const roomDate = document.getElementById("roomDate");
+    const roomTime = document.getElementById("roomTime");
+    const roomAttendees = document.getElementById("roomAttendees");
+    const roomRequestor = document.getElementById("roomRequestor");
+    const approveBtn = document.querySelector('.btn-approve');
+    const rejectBtn = document.querySelector('.btn-reject');
+
+    if (roomImage) {
+        roomImage.src = imageUrl;
+        roomImage.alt = room;
     }
-  } else {
-    alert("Booking not found!")
+    if (roomName) roomName.textContent = room;
+    if (roomLocation) roomLocation.textContent = `${building}, ${floor}`;
+    if (roomMeetingTitle) roomMeetingTitle.textContent = meetingTitle;
+    if (roomDate) roomDate.textContent = formatDate(date);
+    if (roomTime) roomTime.textContent = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+    if (roomAttendees) roomAttendees.textContent = `${attendees} people`;
+    if (roomRequestor) roomRequestor.textContent = requestor;
+
+    if (booking.status !== 'Pending') {
+        if (approveBtn) {
+            approveBtn.disabled = true;
+            approveBtn.textContent = booking.status === 'Approved' ? 'Already Approved' : 'Not Pending';
+        }
+        if (rejectBtn) {
+            rejectBtn.disabled = true;
+            rejectBtn.textContent = booking.status === 'Rejected' ? 'Already Rejected' : 'Not Pending';
+        }
+    }
+}
+
+// Approve/Reject booking - Calls the API
+async function updateBookingStatus(status) { // NEW/MODIFIED
+  if (!currentBooking) {
+    alert("Booking data is missing!");
+    return;
+  }
+  
+  const action = status.toLowerCase(); // 'approve' or 'reject'
+  const confirmText = action === 'approve' ? 
+    `Are you sure you want to APPROVE this booking? The room will be marked as 'Occupied'.` :
+    `Are you sure you want to REJECT this booking?`;
+    
+  if (!confirm(confirmText)) { return; }
+  
+  try {
+    const response = await fetch(`${API_ENDPOINT}?action=${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: currentBooking.id })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      alert(`Booking ${result.data.status} successfully!`);
+      window.location.href = "bookings.php";
+    } else {
+      alert(`Operation Failed: ${result.message}`);
+    }
+  } catch (error) {
+    console.error(`Error ${action}ing booking:`, error);
+    alert(`Failed to perform action. Check server connection.`);
   }
 }
+
+function approveBooking() { updateBookingStatus('Approve'); } // MODIFIED
+function rejectBooking() { updateBookingStatus('Reject'); } // MODIFIED
+
+// Initialize when page loads (Modified)
+document.addEventListener('DOMContentLoaded', () => {
+  loadBookingDetails();
+});
 
 // Global functions for onclick
-window.goBack = goBack
-window.approveBooking = approveBooking
-window.rejectBooking = rejectBooking
+window.goBack = goBack;
+window.approveBooking = approveBooking;
+window.rejectBooking = rejectBooking;

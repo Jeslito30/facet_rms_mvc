@@ -10,6 +10,9 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS teachers;
 
 
+-- In jeslito30/facet-rms2/facet-rms2-10463fbabce2d8b54d4dec68095cbcf1225e29ee/database/database-schema.sql
+
+-- MODIFIED existing rooms table definition (Add image_url)
 CREATE TABLE IF NOT EXISTS rooms (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -20,7 +23,24 @@ CREATE TABLE IF NOT EXISTS rooms (
     status VARCHAR(50),
     startTime TIME,
     endTime TIME,
-    amenities JSON
+    amenities JSON,
+    image_url VARCHAR(255) NULL -- ADDED: URL for the room's image
+);
+
+-- NEW table for booking requests
+CREATE TABLE bookings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    room_id INT NOT NULL,
+    requestor_id INT NOT NULL,
+    meeting_title VARCHAR(255) NOT NULL,
+    request_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    booking_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    attendees INT NOT NULL,
+    recurring VARCHAR(50) COMMENT 'e.g., MWF, TTh, Daily, None',
+    description TEXT,
+    status ENUM('Pending', 'Approved', 'Rejected') NOT NULL DEFAULT 'Pending'
 );
 
 CREATE TABLE users (

@@ -453,7 +453,7 @@
 }
 
 /* Form Styles */
-#roomForm {
+.modal-form {
   padding: 24px;
 }
 

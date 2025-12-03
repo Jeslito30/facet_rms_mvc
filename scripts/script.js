@@ -60,11 +60,13 @@ function attachBookButtonListeners() {
   });
 }
 
+// [NEW FUNCTION]
 function handleBookButtonClick() {
   const roomCard = this.closest(".room-card");
   const roomName = roomCard.querySelector("h3").textContent;
-  console.log("[v1] Booking room:", roomName);
-  alert(`Booking ${roomName}...`);
+  console.log(`[v1] Navigating to rooms page from: ${roomName}`);
+  // Redirect to the main rooms page to make a booking
+  window.location.href = 'rooms.php'; 
 }
 
 
