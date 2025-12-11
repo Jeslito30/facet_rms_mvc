@@ -17,25 +17,42 @@ class Teacher_model {
                 profile_picture_type, created_at, updated_at 
                 FROM users WHERE 1=1 AND id_number != 'A-0001'";
         
+        $types = "";
+        $values = [];
+
         if (!empty($search)) {
-            $search = mysqli_real_escape_string($conn, $search);
-            $sql .= " AND (fullname LIKE '%$search%' 
-                      OR id_number LIKE '%$search%' OR email LIKE '%$search%')";
+            $sql .= " AND (fullname LIKE ? OR id_number LIKE ? OR email LIKE ?)";
+            $searchTerm = "%{$search}%";
+            $types .= "sss";
+            $values[] = $searchTerm;
+            $values[] = $searchTerm;
+            $values[] = $searchTerm;
         }
         
         if ($status !== 'all') {
-            $status = mysqli_real_escape_string($conn, $status);
-            $sql .= " AND LOWER(status) = LOWER('$status')";
+            $sql .= " AND LOWER(status) = LOWER(?)";
+            $types .= "s";
+            $values[] = $status;
         }
         
         if ($department !== 'all') {
-            $department = mysqli_real_escape_string($conn, $department);
-            $sql .= " AND department LIKE '%$department%'";
+            $sql .= " AND department LIKE ?";
+            $departmentTerm = "%{$department}%";
+            $types .= "s";
+            $values[] = $departmentTerm;
         }
         
         $sql .= " ORDER BY fullname";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        if (!empty($types)) {
+            mysqli_stmt_bind_param($stmt, $types, ...$values);
+        }
         
-        $result = mysqli_query($conn, $sql);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
         if (!$result) {
             return ['success' => false, 'message' => 'Error fetching users: ' . mysqli_error($conn)];
         }
@@ -54,13 +71,16 @@ class Teacher_model {
             return ['success' => false, 'message' => 'User ID is required'];
         }
         
-        $id = mysqli_real_escape_string($conn, $id);
         $sql = "SELECT id, id_number, fullname, email, 
                 contact_number, birthdate, department, status, 
                 profile_picture_type, created_at, updated_at 
-                FROM users WHERE id = '$id'";
+                FROM users WHERE id = ?";
         
-        $result = mysqli_query($conn, $sql);
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
         if (!$result) {
             return ['success' => false, 'message' => 'Error fetching user: ' . mysqli_error($conn)];
         }
@@ -88,10 +108,13 @@ class Teacher_model {
             return ['success' => false, 'message' => 'User ID is required'];
         }
         
-        $id = mysqli_real_escape_string($conn, $id);
-        $sql = "SELECT profile_picture, profile_picture_type FROM users WHERE id = '$id'";
+        $sql = "SELECT profile_picture, profile_picture_type FROM users WHERE id = ?";
         
-        $result = @mysqli_query($conn, $sql);
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
         if (!$result || mysqli_num_rows($result) === 0) {
             return ['success' => false, 'message' => 'User not found'];
         }
@@ -106,22 +129,17 @@ class Teacher_model {
 
     public function create($data) {
         $conn = $this->db->getConnection();
-        if (!$data || empty($data['fullname']) || 
-            empty($data['email']) || empty($data['idNumber'])) {
-            return ['success' => false, 'message' => 'Missing required fields'];
-        }
         
         $fullname = $data['fullname'];
         $email = $data['email'];
         $idNumber = $data['idNumber'];
-        $contactNumber = $data['contactNumber'];
-        $birthdate = $data['birthdate'];
-        $department = $data['department'];
+        $contactNumber = $data['contactNumber'] ?? null;
+        $birthdate = $data['birthdate'] ?? null;
+        $department = $data['department'] ?? null;
         $status = $data['status'] ?? 'Active';
         
         $profilePicture = null;
         $profilePictureType = null;
-        $hasPicture = false;
 
         if (!empty($data['profilePicture'])) {
             $base64String = $data['profilePicture'];
@@ -131,43 +149,23 @@ class Teacher_model {
                 $profilePictureType = "image/$imageType";
                 $base64String = substr($base64String, strpos($base64String, ',') + 1);
                 $profilePicture = base64_decode($base64String);
-                $hasPicture = true; 
             }
         }
         
-        if ($hasPicture) {
-            $sql = "INSERT INTO users (id_number, fullname, email, 
-                    contact_number, birthdate, department, status, profile_picture, profile_picture_type) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        } else {
-            $sql = "INSERT INTO users (id_number, fullname, email, 
-                    contact_number, birthdate, department, status) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)";
-        }
+        $sql = "INSERT INTO users (id_number, fullname, email, contact_number, birthdate, department, status, profile_picture, profile_picture_type) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = mysqli_prepare($conn, $sql);
         if (!$stmt) {
             return ['success' => false, 'message' => 'Error preparing statement: ' . mysqli_error($conn)];
         }
         
-        if ($hasPicture) {
-            mysqli_stmt_bind_param($stmt, "sssssssss", 
-                $idNumber, $fullname, $email,
-                $contactNumber, $birthdate, $department, $status, 
-                $profilePicture, $profilePictureType 
-            );
-            
-            if (!mysqli_stmt_send_long_data($stmt, 7, $profilePicture)) {
-                 return ['success' => false, 'message' => 'Error sending profile picture data: ' . mysqli_error($conn)];
-            }
+        mysqli_stmt_bind_param($stmt, "sssssssss", 
+            $idNumber, $fullname, $email,
+            $contactNumber, $birthdate, $department, $status, 
+            $profilePicture, $profilePictureType 
+        );
 
-        } else {
-            mysqli_stmt_bind_param($stmt, "sssssss", 
-                $idNumber, $fullname, $email,
-                $contactNumber, $birthdate, $department, $status
-            );
-        }
-        
         if (mysqli_stmt_execute($stmt)) {
             $newId = mysqli_insert_id($conn);
             return ['success' => true, 'id' => $newId, 'message' => 'User created successfully'];
@@ -182,22 +180,15 @@ class Teacher_model {
 
     public function update($data) {
         $conn = $this->db->getConnection();
-        if (!$data || empty($data['id'])) {
-            return ['success' => false, 'message' => 'User ID is required'];
-        }
         
         $id = $data['id'];
-        $fullname = $data['fullname'] ?? '';
-        $email = $data['email'] ?? '';
-        $idNumber = $data['idNumber'] ?? '';
-        $contactNumber = $data['contactNumber'] ?? '';
-        $birthdate = $data['birthdate'] ?? '';
-        $department = $data['department'] ?? '';
+        $fullname = $data['fullname'];
+        $email = $data['email'];
+        $idNumber = $data['idNumber'];
+        $contactNumber = $data['contactNumber'] ?? null;
+        $birthdate = $data['birthdate'] ?? null;
+        $department = $data['department'] ?? null;
         $status = $data['status'] ?? 'Active';
-        
-        if (empty($fullname) || empty($email) || empty($idNumber)) {
-            return ['success' => false, 'message' => 'Missing required fields: fullname, email, or ID number'];
-        }
         
         $profilePicture = null;
         $profilePictureType = null;
@@ -212,11 +203,9 @@ class Teacher_model {
                 $base64String = substr($base64String, strpos($base64String, ',') + 1);
                 $profilePicture = base64_decode($base64String);
                 
-                if ($profilePicture === false) {
-                    return ['success' => false, 'message' => 'Invalid profile picture data'];
+                if ($profilePicture !== false) {
+                    $hasPicture = true;
                 }
-                
-                $hasPicture = true;
             }
         } 
         
@@ -231,15 +220,11 @@ class Teacher_model {
                 return ['success' => false, 'message' => 'Error preparing statement: ' . mysqli_error($conn)];
             }
             
-            mysqli_stmt_bind_param($stmt, "ssssssssss", 
+            mysqli_stmt_bind_param($stmt, "sssssssssi", 
                 $idNumber, $fullname, $email,
                 $contactNumber, $birthdate, $department, $status,
-                null, $profilePictureType, $id
+                $profilePicture, $profilePictureType, $id
             );
-            
-            if (!mysqli_stmt_send_long_data($stmt, 7, $profilePicture)) {
-                 return ['success' => false, 'message' => 'Error sending profile picture data during update: ' . mysqli_error($conn)];
-            }
             
         } else {
             $sql = "UPDATE users SET id_number=?, fullname=?, 
@@ -251,7 +236,7 @@ class Teacher_model {
                 return ['success' => false, 'message' => 'Error preparing statement: ' . mysqli_error($conn)];
             }
             
-            mysqli_stmt_bind_param($stmt, "ssssssss", 
+            mysqli_stmt_bind_param($stmt, "sssssssi", 
                 $idNumber, $fullname, $email,
                 $contactNumber, $birthdate, $department, $status, $id
             );
@@ -278,11 +263,12 @@ class Teacher_model {
             return ['success' => false, 'message' => 'User ID is required'];
         }
         
-        $id = mysqli_real_escape_string($conn, $id);
-        $sql = "DELETE FROM users WHERE id = '$id'";
+        $sql = "DELETE FROM users WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
         
-        if (@mysqli_query($conn, $sql)) {
-            if (mysqli_affected_rows($conn) > 0) {
+        if (mysqli_stmt_execute($stmt)) {
+            if (mysqli_stmt_affected_rows($stmt) > 0) {
                 return ['success' => true, 'id' => $id, 'message' => 'User deleted successfully'];
             } else {
                 return ['success' => false, 'message' => 'User not found'];

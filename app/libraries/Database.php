@@ -1,9 +1,11 @@
 <?php
+require_once '../app/config.php';
+
 class Database {
-    private $db_server = "localhost";
-    private $db_user = "wb_user";
-    private $db_pass = "1234";
-    private $db_name = "facet_rms";
+    private $db_server = DB_SERVER;
+    private $db_user = DB_USER;
+    private $db_pass = DB_PASS;
+    private $db_name = DB_NAME;
     private $conn;
 
     public function __construct() {
@@ -13,13 +15,7 @@ class Database {
                 throw new Exception(mysqli_connect_error());
             }
         } catch (Exception $e) {
-            // If connection fails, return a JSON error message
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => false,
-                'message' => 'Database connection failed: ' . $e->getMessage()
-            ]);
-            exit();
+            showError('Database connection failed: ' . $e->getMessage(), 500);
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
-     // The path is relative from 'src/pages/' up to root, then down to 'database/'
-      require_once __DIR__ . '/../../database/auth_check.php';
-      require_once __DIR__ . '/../../database/session_manager.php';
+//      // The path is relative from 'src/pages/' up to root, then down to 'database/'
+//       require_once __DIR__ . '/../../database/auth_check.php';
+//       require_once __DIR__ . '/../../database/session_manager.php';
 ?>
 
 <!DOCTYPE html>
@@ -10,12 +10,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="../../assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="../../styles/styles.css">
-    <link rel="stylesheet" href="../../styles/bookings.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/bookings.css">
 </head>
-<body>
-  <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
+  <body>
+  <?php require_once __DIR__ . '/sidebar.php'; ?>
 
     <!-- Toggle Button -->
     <button id="toggleSidebar" class="toggle-btn">
@@ -34,7 +34,7 @@
     <main id="mainContent" class="main-content">
         <!-- Header -->
         <div class="page-header">
-            <h1>Booking Requests</h1>
+            <h1>Book a Room</h1>
             <p>Schedule your space for meetings, study sessions, or events</p>
         </div>
 
@@ -42,55 +42,60 @@
         <div class="booking-details-grid">
             <!-- Left Panel - Booking Form -->
             <div class="booking-form-panel">
+                <input type="hidden" id="roomId">
                 <div class="form-group-row">
                     <div class="form-group">
                         <label>Select Building</label>
-                        <input type="text" id="buildingInput" readonly>
+                        <input type="text" id="buildingInput">
                     </div>
                     <div class="form-group">
                         <label>Select Room</label>
-                        <input type="text" id="roomInput" readonly>
+                        <input type="text" id="roomInput">
                     </div>
                     <div class="form-group">
                         <label>Date</label>
-                        <input type="text" id="dateInput" readonly>
+                        <input type="date" id="dateInput">
                     </div>
                 </div>
 
                 <div class="form-group-row">
                     <div class="form-group full-width">
                         <label>Meeting Title</label>
-                        <input type="text" id="meetingTitleInput" readonly>
+                        <input type="text" id="meetingTitleInput">
                     </div>
                     <div class="form-group">
                         <label>Start Time</label>
-                        <input type="text" id="startTimeInput" readonly>
+                        <input type="time" id="startTimeInput">
                     </div>
                     <div class="form-group">
                         <label>End Time</label>
-                        <input type="text" id="endTimeInput" readonly>
+                        <input type="time" id="endTimeInput">
                     </div>
                 </div>
 
                 <div class="form-group-row">
                     <div class="form-group">
                         <label>Expected Attendees</label>
-                        <input type="text" id="attendeesInput" readonly>
+                        <input type="number" id="attendeesInput">
                     </div>
                     <div class="form-group">
                         <label>Make this a recurring booking</label>
-                        <input type="text" id="recurringInput" readonly>
+                        <select id="recurringInput">
+                            <option value="None">None</option>
+                            <option value="Daily">Daily</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Monthly">Monthly</option>
+                        </select>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Description (Optional)</label>
-                    <textarea id="descriptionInput" rows="4" readonly></textarea>
+                    <textarea id="descriptionInput" rows="4"></textarea>
                 </div>
 
                 <div class="form-actions">
-                    <button class="btn-back" onclick="goBack()">Back</button>
-                    <button class="btn-reject" onclick="rejectBooking()">Reject</button>
+                    <button class="btn-submit" onclick="submitBooking()">Submit</button>
                 </div>
             </div>
 
@@ -156,7 +161,7 @@
         </div>
     </main>
 
-    <script src="../../scripts/script.js"></script>
-    <script src="../../scripts/booking-details.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/booking-details.js"></script>
 </body>
 </html>

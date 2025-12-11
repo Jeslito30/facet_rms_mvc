@@ -1,18 +1,12 @@
-<?php
- require_once '../app/helpers/session_helper.php';
- require_once '../app/helpers/auth_helper.php';
- start_session();
- checkAuth();
-?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
      <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="/facet-rms/public/assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="/facet-rms/public/css/styles.css" />
-    <link rel="stylesheet" href="/facet-rms/public/css/rooms.css" />
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css" />
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/rooms.css" />
   </head>
   <body>
     <?php require_once 'sidebar.php'; ?>
@@ -435,8 +429,8 @@
       </div>
     </div>
 
-    <script src="/facet-rms/public/js/script.js"></script>
-    <script src="/facet-rms/public/js/rooms.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/rooms.js"></script>
   </body>
 </html>
 

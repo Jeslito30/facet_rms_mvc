@@ -1,7 +1,7 @@
 <?php
- require_once __DIR__ . '/../../database/session_manager.php';
-     // The path is relative from 'src/pages/' up to root, then down to 'database/'
-      require_once __DIR__ . '/../../database/auth_check.php';
+// require_once __DIR__ . '/../../database/session_manager.php';
+//      // The path is relative from 'src/pages/' up to root, then down to 'database/'
+//       require_once __DIR__ . '/../../database/auth_check.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,12 +9,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="../../assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="../../styles/styles.css">
-    <link rel="stylesheet" href="../../styles/teachers.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/teachers.css">
 </head>
 <body>
-    <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
+    <?php require_once __DIR__ . '/sidebar.php'; ?>
 
     <button id="toggleSidebar" class="toggle-btn">
         <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -189,7 +189,7 @@
         </div>
     </div>
 
-    <script src="../../scripts/script.js"></script>
-    <script src="../../scripts/teachers.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/teachers.js"></script>
 </body>
 </html>

@@ -81,21 +81,63 @@ body {
   color: #666;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: background-color 200ms ease, color 200ms ease, transform 180ms ease, box-shadow 180ms ease;
+  position: relative;
+}
+
+.nav-item::before {
+  /* accent bar (hidden by default) */
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  background: transparent;
+  border-radius: 4px;
+  transition: background 180ms ease, transform 180ms ease, opacity 180ms ease;
+  opacity: 0;
+  transform: scaleY(0.95);
 }
 
 .nav-item:hover {
-  background-color: #f5f5f5;
-  color: #1a1a1a;
+  background-color: rgba(255, 122, 61, 0.06); /* subtle orange tint */
+  color: #ff7a3d;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.nav-item:hover::before {
+  background: #ff7a3d;
+  opacity: 1;
+  transform: scaleY(1);
 }
 
 .nav-item.active {
   background-color: #ff7a3d;
   color: white;
+  transform: none;
+  box-shadow: none;
 }
 
 .nav-item svg {
   flex-shrink: 0;
+  color: inherit; /* allow svg to follow text color via currentColor */
+  transition: color 180ms ease, transform 180ms ease, opacity 180ms ease;
+}
+
+.nav-item:hover svg {
+  transform: translateX(2px);
+  color: #ff7a3d;
+}
+
+.nav-item.active svg {
+  color: white;
+  transform: none;
+}
+
+.nav-item span {
+  transition: color 180ms ease;
 }
 
 /* Sidebar Footer */

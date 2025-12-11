@@ -9,18 +9,9 @@ function checkAuth() {
     if (!isset($_SESSION['user_id'])) {
      // This constant can be defined in your API files before including this script
         if (defined('IS_API')) {
-         // For API requests, send a 401 Unauthorized status and a JSON error message
-            http_response_code(401);
-           header('Content-Type: application/json');
-          echo json_encode([
-                'success' => false,
-               'message' => 'Authentication required. Please log in.'
-        ]);
-           exit;
+            showError('Authentication required. Please log in.', 401);
        } else {
-           // For regular page loads, redirect the user to the sign-in page
-           header('Location: /facet-rms/public/user/login');
-           exit;
+           redirect('/facet-rms/public/user/login');
        }
     }
 }

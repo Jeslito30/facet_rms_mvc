@@ -27,11 +27,11 @@ toggleBtn.addEventListener("click", () => {
 
 // Navigation active state
 const navItems = document.querySelectorAll(".nav-item");
-const currentPage = window.location.pathname.split("/").pop() || "index.php";
+const currentPage = window.location.pathname;
 
 navItems.forEach((item) => {
   const href = item.getAttribute("href");
-  if (href.includes(currentPage)) {
+  if (currentPage.includes(href)) {
     item.classList.add("active");
   } else {
     item.classList.remove("active");
@@ -63,10 +63,10 @@ function attachBookButtonListeners() {
 // [NEW FUNCTION]
 function handleBookButtonClick() {
   const roomCard = this.closest(".room-card");
-  const roomName = roomCard.querySelector("h3").textContent;
-  console.log(`[v1] Navigating to rooms page from: ${roomName}`);
-  // Redirect to the main rooms page to make a booking
-  window.location.href = '/facet-rms/public/room/index'; 
+  const roomId = this.getAttribute('data-room-id');
+  console.log(`[v1] Navigating to booking page for room ID: ${roomId}`);
+  // Redirect to the booking details page with the room ID
+  window.location.href = `/facet-rms/public/booking/details?roomId=${roomId}`; 
 }
 
 

@@ -1,15 +1,11 @@
-<?php
- require_once '../app/helpers/session_helper.php';
- start_session();
-?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
      <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="/facet-rms/public/assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="/facet-rms/public/css/styles.css" />
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css" />
   </head>
   <body>
     <?php require_once 'sidebar.php'; ?>
@@ -234,7 +230,7 @@
               </svg>
               <h2>Today's Requests</h2>
             </div>
-            <a href="/facet-rms/public/booking/index" class="view-all">View All</a>
+            <a href="<?php echo BASE_URL; ?>/booking/index" class="view-all">View All</a>
           </div>
           <div class="request-card">
             <div class="request-header">
@@ -321,7 +317,7 @@
             </svg>
             <h2>Available Rooms</h2>
           </div>
-          <a href="/facet-rms/public/room/index" class="view-all">View All</a>
+          <a href="<?php echo BASE_URL; ?>/room/index" class="view-all">View All</a>
         </div>
 
         <div class="rooms-grid" id="availableRoomsGrid">
@@ -329,7 +325,7 @@
       </div>
     </main>
 
-    <script src="/facet-rms/public/js/script.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js"></script>
     <script>
     // Get the button element by its ID
     const bookButton = document.getElementById('bookARoomBtn');
@@ -339,17 +335,17 @@
     // Add an event listener to listen for a click
     bookButton.addEventListener('click', function() {
         // Navigate to the 
-        window.location.href = '/facet-rms/public/room/index';
+        window.location.href = '<?php echo BASE_URL; ?>/room/index';
     });
 
     browseRoom.addEventListener('click', function() {
         // Navigate to the 
-        window.location.href = '/facet-rms/public/room/index';
+        window.location.href = '<?php echo BASE_URL; ?>/room/index';
     });
 
     viewCalendar.addEventListener('click', function() {
         // Navigate to the 
-        window.location.href = '/facet-rms/public/calendar/index';
+        window.location.href = '<?php echo BASE_URL; ?>/calendar/index';
     });
 
 

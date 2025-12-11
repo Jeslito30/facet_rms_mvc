@@ -1,15 +1,11 @@
-<?php
- require_once '../app/helpers/session_helper.php';
- start_session();
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="/facet-rms/public/assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="/facet-rms/public/css/signin.css">
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/signin.css">
 </head>
 <body>
     <div class="background-pattern"></div>
@@ -126,7 +122,7 @@
                 <div class="divider">or</div>
 
                 <div class="signup-prompt">
-                    Don't have an account? <a href="/facet-rms/public/user/signup">Sign Up</a>
+                    Don't have an account? <a href="<?php echo BASE_URL; ?>/user/signup">Sign Up</a>
                 </div>
             </form>
         </div>
@@ -155,6 +151,6 @@
             console.log('Sign in attempted');
         });
     </script>
-     <script src="/facet-rms/public/js/signin.js"></script>
+     <script src="<?php echo BASE_URL; ?>/js/signin.js"></script>
 </body>
 </html>

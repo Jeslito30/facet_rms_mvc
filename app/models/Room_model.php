@@ -29,31 +29,35 @@ class Room_model {
     public function save_room($roomData) {
         $conn = $this->db->getConnection();
         $id = isset($roomData['id']) && !empty($roomData['id']) && is_numeric($roomData['id']) ? intval($roomData['id']) : null;
-        $name        = mysqli_real_escape_string($conn, $roomData['name'] ?? '');
-        $description = mysqli_real_escape_string($conn, $roomData['description'] ?? '');
+        $name        = $roomData['name'] ?? '';
+        $description = $roomData['description'] ?? '';
         $capacity    = intval($roomData['capacity'] ?? 0);
-        $building    = mysqli_real_escape_string($conn, $roomData['building'] ?? '');
-        $floor       = mysqli_real_escape_string($conn, $roomData['floor'] ?? '');
-        $status      = mysqli_real_escape_string($conn, $roomData['status'] ?? '');
-        $startTime   = mysqli_real_escape_string($conn, $roomData['startTime'] ?? '');
-        $endTime     = mysqli_real_escape_string($conn, $roomData['endTime'] ?? '');
+        $building    = $roomData['building'] ?? '';
+        $floor       = $roomData['floor'] ?? '';
+        $status      = $roomData['status'] ?? '';
+        $startTime   = $roomData['startTime'] ?? '';
+        $endTime     = $roomData['endTime'] ?? '';
         
         $amenities = $roomData['amenities'] ?? [];
         if (!is_array($amenities)) {
             $amenities = [];
         }
-        $amenities_json = mysqli_real_escape_string($conn, json_encode($amenities));
+        $amenities_json = json_encode($amenities);
 
         if ($id && $id > 0) {
-            $sql = "UPDATE rooms SET name = '$name', description = '$description', capacity = $capacity, 
-                    building = '$building', floor = '$floor', status = '$status', startTime = '$startTime', 
-                    endTime = '$endTime', amenities = '$amenities_json' WHERE id = $id";
+            $sql = "UPDATE rooms SET name = ?, description = ?, capacity = ?, 
+                    building = ?, floor = ?, status = ?, startTime = ?, 
+                    endTime = ?, amenities = ? WHERE id = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ssissssssi", $name, $description, $capacity, $building, $floor, $status, $startTime, $endTime, $amenities_json, $id);
         } else {
             $sql = "INSERT INTO rooms (name, description, capacity, building, floor, status, startTime, endTime, amenities)
-                    VALUES ('$name', '$description', $capacity, '$building', '$floor', '$status', '$startTime', '$endTime', '$amenities_json')";
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "ssissssss", $name, $description, $capacity, $building, $floor, $status, $startTime, $endTime, $amenities_json);
         }
 
-        if (mysqli_query($conn, $sql)) {
+        if (mysqli_stmt_execute($stmt)) {
             $new_id = $id ? $id : mysqli_insert_id($conn);
             return ['success' => true, 'message' => 'Room saved successfully', 'id' => $new_id];
         } else {
@@ -63,15 +67,17 @@ class Room_model {
 
     public function delete_room($roomData) {
         $conn = $this->db->getConnection();
-        $id = mysqli_real_escape_string($conn, $roomData['id'] ?? null);
+        $id = $roomData['id'] ?? null;
 
         if (!$id) { 
             return ['success' => false, 'message' => 'Room ID is missing'];
         }
 
-        $sql = "DELETE FROM rooms WHERE id = $id";
+        $sql = "DELETE FROM rooms WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "i", $id);
 
-        if (mysqli_query($conn, $sql)) {
+        if (mysqli_stmt_execute($stmt)) {
             return ['success' => true, 'message' => "Room with ID $id deleted successfully"];
         } else {
             return ['success' => false, 'message' => 'Error deleting room'];

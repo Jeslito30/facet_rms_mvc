@@ -1,7 +1,7 @@
 <?php
- require_once __DIR__ . '/../../database/session_manager.php';
-     // The path is relative from 'src/pages/' up to root, then down to 'database/'
-      require_once __DIR__ . '/../../database/auth_check.php';
+// require_once __DIR__ . '/../../database/session_manager.php';
+//      // The path is relative from 'src/pages/' up to root, then down to 'database/'
+//       require_once __DIR__ . '/../../database/auth_check.php';
 ?>
 
 <!DOCTYPE html>
@@ -10,12 +10,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
      <title>FaCET-RMS</title>
-    <link rel="icon" type="image/x-icon" href="../../assets/images/facet-logo.jpg">
-    <link rel="stylesheet" href="../../styles/styles.css" />
-    <link rel="stylesheet" href="../../styles/bookings.css" />
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/assets/images/facet-logo.jpg">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/styles.css" />
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/bookings.css" />
   </head>
   <body>
-    <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
+    <?php require_once __DIR__ . '/sidebar.php'; ?>
 
     <!-- Toggle Button -->
     <button id="toggleSidebar" class="toggle-btn">
@@ -180,7 +180,7 @@
       </div>
     </main>
 
-    <script src="../../scripts/script.js"></script>
-    <script src="../../scripts/bookings.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js"></script>
+    <script src="<?php echo BASE_URL; ?>/js/bookings.js"></script>
   </body>
 </html>

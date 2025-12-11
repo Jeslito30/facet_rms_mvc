@@ -10,17 +10,21 @@
     protected $params = [];
 
     public function __construct(){
-      //print_r($this->getUrl());
+        // Get parsed URL segments (if any)
+        $url = $this->getUrl();
 
-      $url = $this->getUrl();
+        // Ensure $url is an array before accessing indices
+        if(!is_array($url)){
+          $url = [];
+        }
 
-      // Look in controllers for first value
-      if(file_exists('../app/controllers/' . ucwords($url[0]). '.php')){
-        // If exists, set as controller
-        $this->currentController = ucwords($url[0]);
-        // Unset 0 Index
-        unset($url[0]);
-      }
+        // Look in controllers for first value
+        if(isset($url[0]) && file_exists('../app/controllers/' . ucwords($url[0]). '.php')){
+          // If exists, set as controller
+          $this->currentController = ucwords($url[0]);
+          // Unset 0 Index
+          unset($url[0]);
+        }
 
       // Require the controller
       require_once '../app/controllers/'. $this->currentController . '.php';
@@ -28,14 +32,16 @@
       // Instantiate controller class
       $this->currentController = new $this->currentController;
 
-      // Check for second part of url
-      if(isset($url[1])){
-        // Check to see if method exists in controller
-        if(method_exists($this->currentController, $url[1])){
-          $this->currentMethod = $url[1];
-          // Unset 1 index
-          unset($url[1]);
-        }
+      // Check for second part of url (method)
+      if(isset($url[1]) && method_exists($this->currentController, $url[1])){
+        $this->currentMethod = $url[1];
+        // Unset 1 index
+        unset($url[1]);
+      }
+
+      // Check if the method is an API call
+      if (substr($this->currentMethod, -4) === '_api') {
+        define('IS_API', true);
       }
 
       // Get params
@@ -52,5 +58,8 @@
         $url = explode('/', $url);
         return $url;
       }
+
+      // Always return an array to simplify callers
+      return [];
     }
   }

@@ -8,26 +8,22 @@ class Booking_model {
 
     public function create($data) {
         $conn = $this->db->getConnection();
-        if (empty($data['roomId']) || empty($data['meetingTitle']) || empty($data['date']) ||
-            empty($data['startTime']) || empty($data['endTime']) || empty($data['attendees'])) {
-            return ['success' => false, 'message' => 'Missing required booking fields'];
-        }
         
         $roomId         = intval($data['roomId']);
-        $meetingTitle   = mysqli_real_escape_string($conn, $data['meetingTitle']);
-        $date           = mysqli_real_escape_string($conn, $data['date']);
-        $startTime      = mysqli_real_escape_string($conn, $data['startTime']);
-        $endTime        = mysqli_real_escape_string($conn, $data['endTime']);
+        $meetingTitle   = $data['meetingTitle'];
+        $date           = $data['date'];
+        $startTime      = $data['startTime'];
+        $endTime        = $data['endTime'];
         $attendees      = intval($data['attendees']);
-        $recurring      = mysqli_real_escape_string($conn, $data['recurring'] ?? 'None');
-        $description    = mysqli_real_escape_string($conn, $data['description'] ?? '');
+        $recurring      = $data['recurring'] ?? 'None';
+        $description    = $data['description'] ?? '';
         $userId = $_SESSION['user_id'] ?? null;
         
         $sql = "INSERT INTO bookings (room_id, requestor_id, meeting_title, booking_date, start_time, end_time, attendees, recurring, description, status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')";
                 
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "iisssssss", 
+        mysqli_stmt_bind_param($stmt, "iisssisss", 
             $roomId, $userId, $meetingTitle, $date, $startTime, $endTime, $attendees, $recurring, $description
         );
         

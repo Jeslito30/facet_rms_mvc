@@ -30,7 +30,7 @@
       </div>
 
       <nav class="nav">
-        <a href="/facet-rms/public/home/index" class="nav-item">
+        <a href="<?php echo BASE_URL; ?>/home/index" class="nav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -49,7 +49,7 @@
           </svg>
           <span>Dashboard</span>
         </a>
-        <a href="/facet-rms/public/room/index" class="nav-item">
+        <a href="<?php echo BASE_URL; ?>/room/index" class="nav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -71,7 +71,7 @@
           </svg>
           <span>Rooms</span>
         </a>
-        <a href="/facet-rms/public/calendar/index" class="nav-item">
+        <a href="<?php echo BASE_URL; ?>/calendar/index" class="nav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -90,7 +90,7 @@
           </svg>
           <span>Calendar</span>
         </a>
-        <a href="/facet-rms/public/booking/index" class="nav-item">
+        <a href="<?php echo BASE_URL; ?>/booking/index" class="nav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -108,7 +108,7 @@
           </svg>
           <span>Bookings</span>
         </a>
-        <a href="/facet-rms/public/teacher/index" class="nav-item">
+        <a href="<?php echo BASE_URL; ?>/teacher/index" class="nav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -136,9 +136,11 @@
               $fullname = $_SESSION['fullname'] ?? 'Admin User';
               $email = $_SESSION['email'] ?? 'admin@dorsu.edu.ph';
               $initials = '';
-              $parts = explode(' ', $fullname);
-              foreach ($parts as $part) {
-                $initials .= strtoupper(substr($part, 0, 1));
+              if (!empty($fullname)) {
+                $parts = explode(' ', $fullname);
+                foreach ($parts as $part) {
+                  $initials .= strtoupper(substr($part, 0, 1));
+                }
               }
               echo $initials;
             ?>
@@ -163,7 +165,7 @@
           </svg>
         </div>
         <div class="account-dropdown" id="accountDropdown">
-          <a href="/facet-rms/public/user/index" class="dropdown-item">
+          <a href="<?php echo BASE_URL; ?>/user/index" class="dropdown-item">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -180,7 +182,7 @@
             </svg>
             <span>My Profile</span>
           </a>
-          <a href="/facet-rms/public/user/logout" class="dropdown-item">
+          <a href="<?php echo BASE_URL; ?>/user/logout" class="dropdown-item">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
