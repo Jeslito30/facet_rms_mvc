@@ -400,7 +400,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay */
+  backdrop-filter: blur(4px); /* Blurs the content behind the modal */
+  -webkit-backdrop-filter: blur(4px);
+  transition: opacity 0.3s ease;
   z-index: 2000;
   align-items: center;
   justify-content: center;
@@ -419,6 +422,12 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .modal-header {
@@ -682,15 +691,20 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: white;
+  background: #1a1a1a; /* Dark toast looks premium */
+  color: white;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   padding: 16px 20px;
   z-index: 3000;
   transform: translateX(100%);
   transition: transform 0.3s ease;
-  border-left: 4px solid #ff7a3d;
+  border: none; /* Remove colored borders */
   min-width: 300px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
 }
 
 .notification.show {
@@ -698,11 +712,31 @@
 }
 
 .notification-success {
-  border-left-color: #27ae60;
+  position: relative;
+}
+
+.notification-success::before {
+  content: '';
+  width: 4px;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #10b981;
 }
 
 .notification-error {
-  border-left-color: #ff4757;
+  position: relative;
+}
+
+.notification-error::before {
+  content: '';
+  width: 4px;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #ef4444;
 }
 
 .notification-content {
@@ -723,7 +757,7 @@
 .notification-content span {
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: white; /* Force white text */
 }
 
 /* Responsive Design */

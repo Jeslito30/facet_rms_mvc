@@ -78,7 +78,15 @@ async function fetchAndDisplayAvailableRooms() {
   if (!roomGrid) {
     return; // Exit if the grid isn't on this page
   }
-  roomGrid.innerHTML = 'Loading rooms...'; // Loading indicator
+
+  // UX Improvement: Show Skeleton Loader instead of text
+  roomGrid.innerHTML = Array(3).fill(0).map(() => `
+    <div class="room-card" style="pointer-events: none;">
+      <div class="skeleton skeleton-title"></div>
+      <div class="skeleton skeleton-text" style="width: 40%"></div>
+      <div class="skeleton skeleton-rect" style="height: 60px; margin-top: 10px;"></div>
+    </div>
+  `).join('');
 
   try {
     const response = await fetch('/facet-rms/public/room/get_all_api');
